@@ -87,22 +87,57 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-
-
-    front = util.Stack()
-    front.push(problem.getStartState())
-    res = []
-    closed = {}
-    while front:
-        node = front.pop()
-        res.append(node)
-        if(problem.isGoalState(node)):
-            print(res)
-            return res
-        succs = problem.getSuccessors(node)
+    def actionRequired(_from, _to):
+        succs = problem.getSuccessors(_from)
         for succ in succs:
             s,d,c = succ
-            front.push(s)
+            if(_to == s):
+                return d
+        return None
+
+    def traceResult(_trace):
+        res = []
+        flippedTrace = util.Stack()
+        while(not _trace.isEmpty()):
+            flippedTrace.push(_trace.pop())
+        
+        if(not flippedTrace.isEmpty()):
+            node = flippedTrace.pop()
+            while(not flippedTrace.isEmpty()):
+                temp = node
+                node = flippedTrace.pop()
+                res.append(actionRequired(temp,node))
+            return res
+        return None
+
+    front = util.Stack()
+    trace = util.Stack()
+    node = problem.getStartState()
+    front.push(node) 
+    visited = []
+    parentMap = {}
+    deadend = False
+    while not front.isEmpty():
+        node = front.pop()
+        if(deadend):
+            back = trace.pop()
+            while(back != parentMap[node]):
+                back = trace.pop()
+                if(back == parentMap[node]):
+                    trace.push(back)
+            deadend = False
+        trace.push(node)
+        visited.append(node)
+        if(problem.isGoalState(node)):
+            return traceResult(trace)
+        succs = problem.getSuccessors(node)
+        deadend = True
+        for succ in succs:
+            s,d,c = succ
+            parentMap[s] = node
+            if(s not in visited):
+                deadend = False
+                front.push(s)
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
