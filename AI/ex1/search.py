@@ -187,39 +187,32 @@ def breadthFirstSearch(problem):
                 prevMap[s] = node
     util.raiseNotDefined()
 
+
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
 
-    def backprobResult(table,endNode,result):
-        if(problem.getStartState() != endNode):
-            s,c,d = table[endNode]
-            result.append(d)
-            backprobResult(table,s,result)
-        return result.reverse()
-
-    pQueue = util.PriorityQueue()
-    visited = []
-    graph_table = {}
-
+    queue = util.PriorityQueue()
+    closed = []
+    pathTable = {}
     node = problem.getStartState()
-    pQueue.push(node,0) # insert the start node to the p-queue
-    graph_table[node] = (node,0,None) #put the start node in the table with cost of 0
-    while pQueue:
-        node = pQueue.pop()
-        visited.append(node)
+    pathTable[node] = (None,0,None)
+    queue.push(node,0)
+    while queue:
+        node = queue.pop()
         if(problem.isGoalState(node)):
             res = []
-            backprobResult(graph_table,node,res)
-            return res
-        succsessors = problem.getSuccessors(node) # check the node neighbors
-        for succ in succsessors:
-            s,d,c = succ
-            if(s not in visited):
-                pQueue.push(s, c)
-                if(s not in graph_table or graph_table[s][1] > int(graph_table[node][1]) + c):
-                    graph_table[s] = (node, graph_table[node][1] + c,d)
-
+            while pathTable[node][0] != None :
+                node,cost,direction = pathTable[node]
+                res.append(direction)
+            return res[::-1]
+        succs = problem.getSuccessors(node)
+        for succ in succs:
+            state, direction, cost = succ
+            if((state not in pathTable and state not in closed) or pathTable[state][1] > pathTable[node][1]+ cost):
+                pathTable[state] = (node,pathTable[node][1] + cost, direction)
+                queue.push(state,pathTable[node][1] + cost)
+        closed.append(node)
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -232,6 +225,27 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    queue = util.PriorityQueue()
+    closed = []
+    pathTable = {}
+    node = problem.getStartState()
+    pathTable[node] = (None,0,None)
+    queue.push(node,0)
+    while queue:
+        node = queue.pop()
+        if(problem.isGoalState(node)):
+            res = []
+            while pathTable[node][0] != None :
+                node,cost,direction = pathTable[node]
+                res.append(direction)
+            return res[::-1]
+        succs = problem.getSuccessors(node)
+        for succ in succs:
+            state, direction, cost = succ
+            if((state not in pathTable and state not in closed) or (pathTable[state][1]) > pathTable[node][1]+ cost):
+                pathTable[state] = (node,pathTable[node][1] + cost, direction)
+                queue.update(state,pathTable[node][1] + cost + + heuristic(state,problem))
+        closed.append(node)
     util.raiseNotDefined()
 
 
