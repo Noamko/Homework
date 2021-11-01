@@ -190,6 +190,35 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+
+
+    pQueue = util.PriorityQueue()
+    visited = []
+    graph_table = {}
+    inQueue = {}
+
+    node = problem.getStartState()
+    pQueue.push(node,0) # insert the start node to the p-queue
+    graph_table[node] = (node,0,None) #put the start node in the table with cost of 0
+    while pQueue:
+        node = pQueue.pop()
+        visited.append(node)
+        if(problem.isGoalState(node)):
+            print(graph_table)
+            res = []
+            for key in graph_table:
+                if(graph_table[key][2] is not None):
+                    res.append(graph_table[key][2])
+            print(res)
+            return res
+        succsessors = problem.getSuccessors(node) # check the node neighbors
+        for succ in succsessors:
+            s,d,c = succ
+            if(s not in visited):
+                pQueue.push(s, c)
+                if(s not in graph_table or graph_table[s][1] > int(graph_table[node][1]) + c):
+                    graph_table[s] = (node, graph_table[node][1] + c, d)
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
