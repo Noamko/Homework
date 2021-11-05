@@ -8,7 +8,7 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "args": ["-l", "bigMaze", "-z .5","-p", "SearchAgent", "-a", "fn=astar,heuristic=manhattanHeuristic"],
+            "args": ["-l", "tinyCorners","-p", "SearchAgent", "-a", "fn=bfs,prob=CornersProblem"],
             "program": "pacman.py",
             "console": "integratedTerminal"
         }

@@ -112,6 +112,8 @@ def depthFirstSearch(problem):
 
     front = util.Stack()
     trace = util.Stack()
+    visited = []
+    parentMap = {}
     node = problem.getStartState()
     front.push(node) 
     visited = []
@@ -142,49 +144,18 @@ def depthFirstSearch(problem):
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-
-    def actionRequired(_from, _to):
-        succs = problem.getSuccessors(_from)
-        for succ in succs:
-            s,d,c = succ
-            if(_to == s):
-                return d
-        return None
-
-    def traceResult(path):
-        res = []
-        if(len(path) > 0):
-            node = path.pop()
-            while(len(path) > 0):
-                temp = node
-                node = path.pop()
-                res.append(actionRequired(temp,node))
-            return res
-        return None
-
     queue = util.Queue()
-    queuelist = []
     visited = []
-    prevMap = {}
-    queue.push(problem.getStartState())
-    prevMap[problem.getStartState()] = problem.getStartState()
-    while(queue):
+    queue.push((problem.getStartState(),[]))
+    while not queue.isEmpty():
         node = queue.pop()
-        visited.append(node)
-        if(problem.isGoalState(node)):
-            path = []
-            for i in range(len(prevMap)):
-                if(node not in path):
-                    path.append(node)
-                    node = prevMap[node]
-            return traceResult(path)
-        for succ in problem.getSuccessors(node):
-            s,_,_ = succ
-            if(s not in visited and s not in queuelist):
-                queue.push(s)
-                queuelist.append(s)
-                prevMap[s] = node
+        visited.append(node[0])
+        if(problem.isGoalState(node[0])):
+            return node[1]
+        for succ in problem.getSuccessors(node[0]):
+            state,direction,cost = succ
+            if state not in visited:
+                queue.push((state,node[1] + [direction]))
     util.raiseNotDefined()
 
 
