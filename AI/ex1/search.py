@@ -87,75 +87,44 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    def actionRequired(_from, _to):
-        succs = problem.getSuccessors(_from)
-        for succ in succs:
-            s,d,c = succ
-            if(_to == s):
-                return d
-        return None
 
-    def traceResult(_trace):
-        res = []
-        flippedTrace = util.Stack()
-        while(not _trace.isEmpty()):
-            flippedTrace.push(_trace.pop())
-        
-        if(not flippedTrace.isEmpty()):
-            node = flippedTrace.pop()
-            while(not flippedTrace.isEmpty()):
-                temp = node
-                node = flippedTrace.pop()
-                res.append(actionRequired(temp,node))
-            return res
-        return None
+    stack = util.Stack()
+    start = problem.getStartState()
+    startNode = (start,[])
+    visited = []
+    stack.push(startNode)
+    while stack:
+        position, pathToSate = stack.pop()
+        visited.append(position)
+        if problem.isGoalState(position):
+            return pathToSate
+        for pos,action,cost in problem.getSuccessors(position):
+            if pos not in visited:
+                stack.push((pos,pathToSate + [action]))
+    return pathToSate
 
-    front = util.Stack()
-    trace = util.Stack()
-    visited = []
-    parentMap = {}
-    node = problem.getStartState()
-    front.push(node) 
-    visited = []
-    parentMap = {}
-    deadend = False
-    while not front.isEmpty():
-        node = front.pop()
-        if(deadend):
-            back = trace.pop()
-            while(back != parentMap[node]):
-                back = trace.pop()
-                if(back == parentMap[node]):
-                    trace.push(back)
-            deadend = False
-        trace.push(node)
-        visited.append(node)
-        if(problem.isGoalState(node)):
-            return traceResult(trace)
-        succs = problem.getSuccessors(node)
-        deadend = True
-        for succ in succs:
-            s,d,c = succ
-            parentMap[s] = node
-            if(s not in visited):
-                deadend = False
-                front.push(s)
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     queue = util.Queue()
     visited = []
-    queue.push((problem.getStartState(),[]))
+    start = (problem.getStartState(),[], 0)
+    queue.push(start)
+
     while not queue.isEmpty():
-        node = queue.pop()
-        visited.append(node[0])
-        if(problem.isGoalState(node[0])):
-            return node[1]
-        for succ in problem.getSuccessors(node[0]):
-            state,direction,cost = succ
-            if state not in visited:
-                queue.push((state,node[1] + [direction]))
+        s,a,c = queue.pop()
+
+        if(s not in visited):
+            visited.append(s)
+            if(problem.isGoalState(s)):
+                return a
+
+            succs = problem.getSuccessors(s)
+            for state, action, cost in succs:
+                queue.push((state , a + [action], c + cost))
+    return a
+
     util.raiseNotDefined()
 
 
@@ -213,9 +182,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         succs = problem.getSuccessors(node)
         for succ in succs:
             state, direction, cost = succ
+            h = heuristic(state,problem)
             if((state not in pathTable and state not in closed) or (pathTable[state][1]) > pathTable[node][1]+ cost):
                 pathTable[state] = (node,pathTable[node][1] + cost, direction)
-                queue.update(state,pathTable[node][1] + cost + + heuristic(state,problem))
+                queue.update(state,pathTable[node][1] + cost + h)
         closed.append(node)
     util.raiseNotDefined()
 
