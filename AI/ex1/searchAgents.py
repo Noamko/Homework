@@ -1,3 +1,6 @@
+# Noam Koren
+# 308192871
+
 # searchAgents.py
 # ---------------
 # Licensing Information:  You are free to use or extend these projects for
@@ -288,6 +291,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         unexplored = list(self.corners)
+        self.gameState = startingGameState
         if(self.startingPosition in unexplored):
             unexplored.remove(self.startingPosition)
         self.startState = (self.startingPosition, tuple(unexplored))
@@ -372,12 +376,18 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    temp = 9999
-    for corner in problem.corners:
-        closestCornerDistance = util.manhattanDistance(state[0], corner)
-        if closestCornerDistance < temp:
-            temp = closestCornerDistance
-    return closestCornerDistance
+    max = 0
+    farthestCorenr = ()
+    farthestFromMe = 0
+    unexplored = list(state[1])
+    if len(unexplored) > 0 :
+        for corner in unexplored:
+            dist = util.manhattanDistance(state[0], corner)
+            if dist > max:
+                max = dist
+                farthestCorenr = corner
+        farthestFromMe = mazeDistance(state[0],farthestCorenr,problem.gameState)
+    return farthestFromMe
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -471,17 +481,18 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    
-    maxDis = 0
-    mostSpaced = (position,position)
-    for food in foodGrid.asList():
-         for food1 in foodGrid.asList():
-             if maxDis < util.manhattanDistance(food,food1):
-                 maxDis = util.manhattanDistance(food,food1)
-                 mostSpaced = (food,food1)
-    d1 = util.manhattanDistance(position,mostSpaced[0])
-    d2 = util.manhattanDistance(position,mostSpaced[1])
-    return d1 + maxDis if d1 < d2 else d2 + maxDis
+    max = 0
+    farthestFood = ()
+    farthestFromMe = 0
+    unexplored = foodGrid.asList()
+    if len(unexplored) > 0 :
+        for food in unexplored:
+            dist = util.manhattanDistance(state[0], food)
+            if dist > max:
+                max = dist
+                farthestFood = food
+        farthestFromMe = mazeDistance(state[0],farthestFood,problem.startingGameState)
+    return farthestFromMe
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"

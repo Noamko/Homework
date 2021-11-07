@@ -1,3 +1,6 @@
+# Noam Koren
+# 308192871
+
 # search.py
 # ---------
 # Licensing Information:  You are free to use or extend these projects for
@@ -119,14 +122,12 @@ def breadthFirstSearch(problem):
             visited.append(s)
             if(problem.isGoalState(s)):
                 return a
-
             succs = problem.getSuccessors(s)
             for state, action, cost in succs:
                 queue.push((state , a + [action], c + cost))
     return a
 
     util.raiseNotDefined()
-
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -149,7 +150,7 @@ def uniformCostSearch(problem):
         succs = problem.getSuccessors(node)
         for succ in succs:
             state, direction, cost = succ
-            if((state not in pathTable and state not in closed) or pathTable[state][1] > pathTable[node][1]+ cost):
+            if (state not in pathTable and state not in closed) or pathTable[state][1] > pathTable[node][1]+ cost:
                 pathTable[state] = (node,pathTable[node][1] + cost, direction)
                 queue.push(state,pathTable[node][1] + cost)
         closed.append(node)
