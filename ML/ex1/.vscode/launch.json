@@ -8,7 +8,7 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "args": ["dog.jpeg","cents1.txt","out"],
+            "args": ["dog.jpeg","cents5.txt","blob.txt"],
             "program": "ex1.py",
             "console": "integratedTerminal"
         }
