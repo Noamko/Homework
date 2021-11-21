@@ -7,7 +7,7 @@
         {
             "name": "Python: Current File",
             "type": "python",
-            "args": ["train_x.txt", "train_y.txt", "test_x.txt", "hi.txt"],
+            "args": ["train_x.txt", "train_y.txt", "test_x.txt", "out.txt"],
             "request": "launch",
             "program": "ex2.py",
             "console": "integratedTerminal"

@@ -139,19 +139,11 @@ class PA:
         return argmax(value, self.w)
 
 
-training_x_set_path = sys.argv[1]
-training_y_set_path = sys.argv[2]
-test_x_set_path = sys.argv[3]
-outfile_path = sys.argv[4]
+classes = np.loadtxt(sys.argv[2], int)
+normalized_training_data = normalize_data(np.loadtxt(sys.argv[1], dtype='str'))
+normalized_test_data = normalize_data(np.loadtxt(sys.argv[3], dtype='str'))
 
-training_set = np.loadtxt(training_x_set_path, dtype='str')
-test_set = np.loadtxt(test_x_set_path, dtype='str')
-classes = np.loadtxt(training_y_set_path, int)
-
-normalized_training_data = normalize_data(training_set)
-normalized_test_data = normalize_data(test_set)
-
-out = open(outfile_path,'a')
+out = open(sys.argv[4],'a')
 
 knn = KNN(5, normalized_training_data, classes)
 preceptron = Preceptron(normalized_training_data, classes)
