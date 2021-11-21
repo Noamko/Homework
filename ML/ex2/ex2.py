@@ -120,20 +120,22 @@ class PA:
         self.training_y = training_y
 
     def train(self):
-        learning_rate = 1
-        lambd = 0.01
         for y in self.training_y: self.w[y] = np.zeros(len(self.training_x[0])) # init weight vectors for each class
         index = 0
-        for x in self.training_x:
-            x[4] = 0
-            y_hat = argmax(x,self.w)
-            yi = self.training_y[index] # g(x) = yi --> true y
-            if y_hat != yi:
-                self.w[yi] = (1 - learning_rate * lambd) * self.w[yi] + learning_rate * x
-                self.w[y_hat] = (1 - learning_rate * lambd) * self.w[y_hat] - learning_rate * x
-            index+=1
+        for _ in range(20):
+            index = 0
+            for x in self.training_x:
+                x[4] = 0
+                y_hat = argmax(x,self.w)
+                yi = self.training_y[index] # g(x) = yi --> true y
+                if y_hat != yi:
+                    tau = (max(0, (1 - np.dot(self.w[yi], x) + np.dot(self.w[y_hat],x)))) / (2 * np.linalg.norm(x)**2)
+                    self.w[yi] = self.w[yi] + tau * x
+                    self.w[y_hat] = self.w[y_hat] -  tau * x
+                index+=1
 
     def predict(self,value):
+        value[4] = 0
         return argmax(value, self.w)
 
 
