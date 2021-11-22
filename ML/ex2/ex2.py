@@ -156,20 +156,33 @@ perceptron = Perceptron(normalize_data(np.loadtxt(sys.argv[1], dtype='str'), 'si
 pa = PA(normalize_data(np.loadtxt(sys.argv[1], dtype='str')), classes)
 svm = SVM(normalize_data(np.loadtxt(sys.argv[1], dtype='str')), classes)
 
-print(sys.argv[3])
 svm.train()
 perceptron.train()
 pa.train()
+
 zscore_norm_test =  normalize_data(np.loadtxt(sys.argv[3], dtype='str'),'zscore')
 sigmoid_norm_test =  normalize_data(np.loadtxt(sys.argv[3], dtype='str'),'sigmoid')
-normalized_test_test = normalize_data(np.loadtxt(sys.argv[3], dtype='str'))
-for x in zscore_norm_test:
-    knn_yhat = knn.predict(x)
-    perceptron_yhat = perceptron.predict(x)
-    svm_yhat =  svm.predict(x)
-    pa_yhat = pa.predict(x)
-    out.write(f"knn: {knn_yhat}, perceptron: {perceptron_yhat}, svm: {svm_yhat}, pa: {pa_yhat}\n")
+normalized_test = normalize_data(np.loadtxt(sys.argv[3], dtype='str'))
 
+def print_test_results(Z,S,N):
+    knn_res = []
+    perceptron_res = []
+    svm_res = []
+    pa_res = []
+
+    for x in Z:
+        knn_res.append(knn.predict(x))
+    for x in S:
+        perceptron_res.append(perceptron.predict(x))
+    for x in N:
+        svm_res.append(svm.predict(x))
+        pa_res.append(pa.predict(x))
+    
+
+    for i in range(len(N)):
+        out.write(f"knn: {knn_res[i]}, perceptron: {perceptron_res[i]}, svm: {svm_res[i]}, pa: {pa_res[i]}\n")
+
+print_test_results(zscore_norm_test,sigmoid_norm_test, normalized_test)
 
 
 
