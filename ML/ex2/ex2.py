@@ -1,3 +1,7 @@
+# Noam Koren
+# 308192871
+
+import matplotlib.pyplot as plt
 import numpy as np
 import sys
 # Ideas for higher performance:
@@ -16,14 +20,15 @@ def parse_data(arr):
 def sigmoid(x):
     return  1 /(1 + np.exp(-x))
 
-def normalize_data(data):
+def normalize_data(data, fun = 'none'):
     normalized = []
     temp = parse_data(data)
     for row in np.transpose(temp):
         r = []
         for value in row:
-            # r.append(sigmoid(value))
-            r.append(zscore(value,np.mean(row), np.std(row)))
+            if fun == 'zscore': r.append(zscore(value,np.mean(row), np.std(row)))
+            elif fun == 'sigmoid': r.append(sigmoid(value))
+            else: r.append(value)
         normalized.append(r)
     return np.transpose(normalized)
 
@@ -58,30 +63,34 @@ class KNN:
         return np.bincount([i[1] for i in neighbors]).argmax()
 
 
-class Preceptron:
-    training_x = None
-    training_y = None
-    w = {}
-    def __init__(self,training_x,training_y):
-        self.training_x = training_x
-        self.training_y = training_y
-        
-    def train(self):
+class Perceptron:
+    def __init__(self,X,Y):
+        self.training_x = X
+        self.training_y = Y
+        self.w = {}
+        self.biases = {}
+    def  train(self):
         learning_rate = 1
-        iterations = 1
-        for y in self.training_y: self.w[y] = np.zeros(len(self.training_x[0])) # init weight vectors for each class
-        for _ in range(iterations): # TODO: shuffle?
-            index = 0
-            for x in self.training_x:
+        epoch = 1000
+        error = 0
+        for y in self.training_y:
+            self.w[y] = np.zeros(len(self.training_x[0])) # init weight vectors for each class
+            self.biases[y] = 0
+        for _ in range(epoch): # TODO: shuffle?
+            error = 0
+            for i,x in enumerate(self.training_x):
                 x[4] = 0
                 y_hat = argmax(x,self.w)
-                yi = self.training_y[index] # g(x) = yi --> true y 
+                yi = self.training_y[i] # g(x) = yi --> true y 
                 if y_hat != yi:
-                    self.w[yi] += learning_rate * x
-                    self.w[y_hat] -= learning_rate * x
-                index+=1
+                    self.w[yi] += x *learning_rate + self.biases[yi]
+                    self.w[y_hat] -= x*learning_rate - self.biases[yi]
+                    #self.biases[yi] += learning_rate 
+                    error+=1
+            #print((1 - error/ len(self.training_x)) * 100)
+
     def predict(self, v):
-        v[4] = 0
+
         return argmax(v, self.w)
 
 
@@ -138,25 +147,25 @@ class PA:
         value[4] = 0
         return argmax(value, self.w)
 
-
 classes = np.loadtxt(sys.argv[2], int)
 normalized_training_data = normalize_data(np.loadtxt(sys.argv[1], dtype='str'))
-normalized_test_data = normalize_data(np.loadtxt(sys.argv[3], dtype='str'))
-
 out = open(sys.argv[4],'a')
 
-knn = KNN(5, normalized_training_data, classes)
-preceptron = Preceptron(normalized_training_data, classes)
-pa = PA(normalized_training_data, classes)
-svm = SVM(normalized_training_data, classes)
+knn = KNN(5,normalize_data(np.loadtxt(sys.argv[1], dtype='str'), 'zscore'), classes)
+perceptron = Perceptron(normalize_data(np.loadtxt(sys.argv[1], dtype='str'), 'sigmoid'), classes)
+pa = PA(normalize_data(np.loadtxt(sys.argv[1], dtype='str')), classes)
+svm = SVM(normalize_data(np.loadtxt(sys.argv[1], dtype='str')), classes)
 
+print(sys.argv[3])
 svm.train()
-preceptron.train()
+perceptron.train()
 pa.train()
-
-for x in normalized_test_data:
+zscore_norm_test =  normalize_data(np.loadtxt(sys.argv[3], dtype='str'),'zscore')
+sigmoid_norm_test =  normalize_data(np.loadtxt(sys.argv[3], dtype='str'),'sigmoid')
+normalized_test_test = normalize_data(np.loadtxt(sys.argv[3], dtype='str'))
+for x in zscore_norm_test:
     knn_yhat = knn.predict(x)
-    perceptron_yhat = preceptron.predict(x)
+    perceptron_yhat = perceptron.predict(x)
     svm_yhat =  svm.predict(x)
     pa_yhat = pa.predict(x)
     out.write(f"knn: {knn_yhat}, perceptron: {perceptron_yhat}, svm: {svm_yhat}, pa: {pa_yhat}\n")
