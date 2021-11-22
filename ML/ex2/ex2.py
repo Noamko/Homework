@@ -69,83 +69,83 @@ class Perceptron:
         self.training_y = Y
         self.w = {}
         self.biases = {}
-    def  train(self):
-        learning_rate = 1
-        epoch = 1000
-        error = 0
+    def fit(self):
+        # lr of 0.001 and bias of 0.001 for all y gave 93.3%
+        # TODO: check if diffrent biases for diffrenet labales increases
+        learning_rate = 0.001
+        epochs = 1000
         for y in self.training_y:
             self.w[y] = np.zeros(len(self.training_x[0])) # init weight vectors for each class
-            self.biases[y] = 0
-        for _ in range(epoch): # TODO: shuffle?
-            error = 0
+            self.biases[y] = -0.001
+        for _ in range(epochs):
             for i,x in enumerate(self.training_x):
-                x[4] = 0
+                x[4] = 0 # check if this matters
                 y_hat = argmax(x,self.w)
                 yi = self.training_y[i] # g(x) = yi --> true y 
                 if y_hat != yi:
-                    self.w[yi] += x *learning_rate + self.biases[yi]
-                    self.w[y_hat] -= x*learning_rate - self.biases[yi]
-                    #self.biases[yi] += learning_rate 
-                    error+=1
-            #print((1 - error/ len(self.training_x)) * 100)
+                    self.w[yi] = self.w[yi] + learning_rate * (x + self.biases[yi])
+                    self.w[y_hat] = self.w[y_hat] - learning_rate * (x + self.biases[yi])
 
     def predict(self, v):
-
         return argmax(v, self.w)
 
 
 class SVM:
-    training_x = None
-    training_y = None
-    w = {}
-    def __init__(self,training_x, training_y):
-        self.training_x = training_x
-        self.training_y = training_y
-    
-    def train(self):
-        learning_rate = 1
-        lambd = 0.01
-        for y in self.training_y: self.w[y] = np.zeros(len(self.training_x[0])) # init weight vectors for each class
-        index = 0
-        for x in self.training_x:
-            x[4] = 0
-            y_hat = argmax(x,self.w)
-            yi = self.training_y[index] # g(x) = yi --> true y
-            if y_hat != yi:
-                self.w[yi] = (1 - learning_rate * lambd) * self.w[yi] + learning_rate * x
-                self.w[y_hat] = (1 - learning_rate * lambd) * self.w[y_hat] - learning_rate * x
-            index+=1
+    def __init__(self,X,Y):
+            self.training_x = X
+            self.training_y = Y
+            self.w = {}
+            self.biases = {}
+    def fit(self):
+        # lr of 0.001 and bias of 0.001 for all y gave 93.3%
+        # TODO: check if diffrent biases for diffrenet labales increases
+        learning_rate = 0.001
+        lmbda = 0.0081
+        epochs = 1000
+        for y in self.training_y:
+            self.w[y] = np.zeros(len(self.training_x[0])) # init weight vectors for each class
+            self.biases[y] = -0.001
+        for _ in range(epochs):
+            for i,x in enumerate(self.training_x):
+                x[4] = 0 # check if this matters
+                y_hat = argmax(x,self.w)
+                yi = self.training_y[i] # g(x) = yi --> true y 
+                if y_hat != yi:
+                    self.w[yi] = (1 - lmbda * learning_rate) * self.w[yi] + learning_rate * (x + self.biases[yi])
+                    self.w[y_hat] = (1 - lmbda * learning_rate) * self.w[y_hat] - learning_rate * (x + self.biases[yi])
 
-    def predict(self,value):
-        return argmax(value, self.w)
-    
+    def predict(self, v):
+        return argmax(v, self.w)
 
 class PA:
-    training_x = None
-    training_y = None
-    w = {}
-    def __init__(self, training_x, training_y):
-        self.training_x = training_x
-        self.training_y = training_y
-
-    def train(self):
-        for y in self.training_y: self.w[y] = np.zeros(len(self.training_x[0])) # init weight vectors for each class
-        index = 0
-        for _ in range(20):
-            index = 0
-            for x in self.training_x:
-                x[4] = 0
+    def __init__(self,X,Y):
+        self.training_x = X
+        self.training_y = Y
+        self.w = {}
+        self.biases = {}
+    def fit(self):
+        # lr of 0.001 and bias of 0.001 for all y gave 93.3%
+        # TODO: check if diffrent biases for diffrenet labales increases
+        learning_rate = 0.01
+        epochs = 1000
+        for y in self.training_y:
+            self.w[y] = np.zeros(len(self.training_x[0])) # init weight vectors for each class
+            self.biases[0] = 0
+            self.biases[1] = 0
+            self.biases[2] = 0
+        for _ in range(epochs):
+            for i,x in enumerate(self.training_x):
+                x[4] = 0 # noisy
                 y_hat = argmax(x,self.w)
-                yi = self.training_y[index] # g(x) = yi --> true y
+                yi = self.training_y[i] # g(x) = yi --> true y 
                 if y_hat != yi:
-                    tau = (max(0, (1 - np.dot(self.w[yi], x) + np.dot(self.w[y_hat],x)))) / (2 * np.linalg.norm(x)**2)
-                    self.w[yi] = self.w[yi] + tau * x
-                    self.w[y_hat] = self.w[y_hat] -  tau * x
-                index+=1
+                    tau = (max(0, (1 - np.dot(self.w[yi], x) + np.dot(self.w[y_hat],x)))) / (2*np.linalg.norm(x))
+                    self.w[yi] = self.w[yi] + learning_rate * tau * (x + self.biases[yi])
+                    self.w[y_hat] = self.w[y_hat] - learning_rate * tau * (x + self.biases[y_hat])
 
-    def predict(self,value):
-        value[4] = 0
-        return argmax(value, self.w)
+    def predict(self, v):
+        v[4] = 0
+        return argmax(v, self.w)
 
 classes = np.loadtxt(sys.argv[2], int)
 normalized_training_data = normalize_data(np.loadtxt(sys.argv[1], dtype='str'))
@@ -153,12 +153,12 @@ out = open(sys.argv[4],'a')
 
 knn = KNN(5,normalize_data(np.loadtxt(sys.argv[1], dtype='str'), 'zscore'), classes)
 perceptron = Perceptron(normalize_data(np.loadtxt(sys.argv[1], dtype='str'), 'sigmoid'), classes)
-pa = PA(normalize_data(np.loadtxt(sys.argv[1], dtype='str')), classes)
-svm = SVM(normalize_data(np.loadtxt(sys.argv[1], dtype='str')), classes)
+svm = SVM(normalize_data(np.loadtxt(sys.argv[1], dtype='str'),'sigmoid'), classes)
+pa = PA(normalize_data(np.loadtxt(sys.argv[1], dtype='str'),'zscore'), classes)
 
-svm.train()
-perceptron.train()
-pa.train()
+svm.fit()
+perceptron.fit()
+pa.fit()
 
 zscore_norm_test =  normalize_data(np.loadtxt(sys.argv[3], dtype='str'),'zscore')
 sigmoid_norm_test =  normalize_data(np.loadtxt(sys.argv[3], dtype='str'),'sigmoid')
@@ -170,15 +170,14 @@ def print_test_results(Z,S,N):
     svm_res = []
     pa_res = []
 
-    for x in Z:
+    for x in Z: # zscore normalization
         knn_res.append(knn.predict(x))
-    for x in S:
-        perceptron_res.append(perceptron.predict(x))
-    for x in N:
-        svm_res.append(svm.predict(x))
         pa_res.append(pa.predict(x))
-    
-
+    for x in S: # sigmoid normalization
+        perceptron_res.append(perceptron.predict(x))
+        svm_res.append(svm.predict(x))
+    for x in N: # no normalization
+        pass
     for i in range(len(N)):
         out.write(f"knn: {knn_res[i]}, perceptron: {perceptron_res[i]}, svm: {svm_res[i]}, pa: {pa_res[i]}\n")
 
