@@ -4,26 +4,26 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
+"""TODO:
+add more hidden layers
+try to optimize
+refactor to be more generic
+"""
 def digit_to_array(d):
     arr = np.zeros(10)
     arr[int(d)] = 1
     return arr
-def shuffle(x, y):
-    np.random.get_state()
-    rand_state = np.random.get_state()
-    np.random.shuffle(x)
-    np.random.set_state(rand_state)
-    np.random.shuffle(y)
-    return x, y
 
 class NN:
     #initialize weights and biases
-    def __init__(self,hiddenLayerSize):
+    def __init__(self,inputLayerSize, hiddenLayerSize, outputLayerSize, hiddenLayerCount):
+        self.epochs = 20
+        self.learnin_rate = 0.02
+
         self.w1 = np.random.uniform(-0.09, 0.09, [hiddenLayerSize, 784])
         self.b1 = np.random.uniform(-0.09, 0.09, [hiddenLayerSize, 1])  # 0.25 -> 15   0.9-0.9->13 0.09-9.6
         self.w2 = np.random.uniform(-0.09, 0.09, [10, hiddenLayerSize])
         self.b2 = np.random.uniform(-0.09, 0.09, [10, 1])
-        self.epochs = 20
 
     def forward(self,x):
         x = x.reshape(len(x), 1)
@@ -63,20 +63,15 @@ class NN:
             print("training: epoch: " + str(i) + "/20")
             for example, label in training_set:
                 dw1, db1, dw2 ,db2 = self.backprob(self.forward(example),label)
-                self.w1 = self.w1 - 0.02 * dw1
-                self.b1 = self.b1 - 0.02 * db1
 
-                self.w2 = self.w2 - 0.02 * dw2
-                self.b2 = self.b2 - 0.02 * db2
+                self.w1 = self.w1 - self.learnin_rate * dw1
+                self.b1 = self.b1 - self.learnin_rate * db1
+                self.w2 = self.w2 - self.learnin_rate * dw2
+                self.b2 = self.b2 - self.learnin_rate * db2
+                
     def predict(self,x):
-        res = self.forward(x)[4]
-        max = 0
-        result = 0
-        for i in range(len(res)):
-            if max < res[i]:
-                max = i
-                result = i
-        return result
+        prediction_vector = nn.forward(x)[4]
+        return a.argmax()
 
             
 print("loading training data...")
@@ -93,7 +88,8 @@ training_set = training_set[:5000]
 print("done.")
 
 nn = NN(150)
-x,y = training_set
+x,y = zip(*training_set)
+
 nn.train(x, y)
 file = open("test_y", 'w')
 for i in range(len(test_x)):
