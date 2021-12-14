@@ -8,7 +8,6 @@ refactor to be more generic
 """
 
 
-
 def check_precision(count):
     gen_y = np.loadtxt("test_y")
     real_y = np.loadtxt('real_y')
@@ -16,24 +15,28 @@ def check_precision(count):
     for i in range(count):
         if gen_y[i] != real_y[i]: miss+=1
 
-    miss = miss / count * 100
+    miss = 100 - miss / count * 100
     return miss
 
 
 class NN:
     # initialize weights and biases
     def __init__(self, inputLayerSize, hiddenLayerSize, outputLayerSize, hiddenLayerCount = 1):
-        self.epochs = 20
-        self.learning_rate = 0.02
+        self.epochs = 24
+        self.learning_rate = 0.019
         self.weights = [np.random.uniform(-0.09, 0.09, [hiddenLayerSize, inputLayerSize])]
         self.biases = [np.random.uniform(-0.09, 0.09, [hiddenLayerSize, 1])]
         for i in range(0, hiddenLayerCount):
             self.weights.append(np.random.uniform(-0.09, 0.09, [hiddenLayerSize, hiddenLayerSize]))
             self.biases.append(np.random.uniform(-0.09, 0.09, [hiddenLayerSize, 1]))
 
-        if hiddenLayerCount == 1:
-            self.weights[-1] = np.random.uniform(-0.09, 0.09, [outputLayerSize, hiddenLayerSize])
-            self.biases[-1] = np.random.uniform(-0.09, 0.09, [outputLayerSize, 1])
+        self.weights[-1] = np.random.uniform(-0.09, 0.09, [outputLayerSize, hiddenLayerSize])
+        self.biases[-1] = np.random.uniform(-0.09, 0.09, [outputLayerSize, 1])
+
+    def set_epoch_count(self, c):
+        self.epochs = c
+    def set_learning_rate(self, x):
+        self.learning_rate = x
 
     def forward(self, x):
         x = x.reshape(len(x), 1)
@@ -59,7 +62,7 @@ class NN:
         zs, hs = forward_result
         _y = np.zeros(10)
         _y[int(y)] = 1
-        dz2 = (hs[-1] - _y.reshape(10, 1))  # TODO: check what is the real derivative for now this works fine
+        dz2 = 2*(hs[-1] - _y.reshape(10, 1))  # TODO: check what is the real derivative for now this works fine
         dws[-1] = np.matmul(dz2, hs[-2].T)
         dbs[-1] = dz2
         dz = dz2
@@ -113,7 +116,7 @@ np.random.shuffle(training_set)
 training_set = training_set[:5000]
 print("done.")
 
-nn = NN(784, 150, 10, 1)
+nn = NN(784, 150, 10, 3)
 x, y = zip(*training_set)
 nn.train(x, y)
 file = open("test_y", 'w')
@@ -122,4 +125,4 @@ for i in range(len(test_x)):
     prediction = nn.predict(test_x[i])
     file.write(f"{prediction}\n")
 file.close()
-print("precistion: " + str(check_precision(5000)) + '%')
+print("precistion: " + str(check_precision(len(test_x))) + '%')
