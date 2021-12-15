@@ -8,17 +8,6 @@ refactor to be more generic
 """
 
 
-def check_precision(count):
-    gen_y = np.loadtxt("test_y")
-    real_y = np.loadtxt('real_y')
-    miss = 0
-    for i in range(count):
-        if gen_y[i] != real_y[i]: miss+=1
-
-    miss = 100 - miss / count * 100
-    return miss
-
-
 class NN:
     # initialize weights and biases
     def __init__(self, inputLayerSize, hiddenLayerSize, outputLayerSize, hiddenLayerCount = 1):
@@ -96,7 +85,7 @@ class NN:
                 for i in range(len(self.weights)):
                     self.weights[i] -= self.learning_rate * dws[i]
                     self.biases[i] -= self.learning_rate * dbs[i]
-
+        print("done.")
     def predict(self, x):
         prediction_vector = nn.forward(x)[1][-1]
         return prediction_vector.argmax()
@@ -125,4 +114,3 @@ for i in range(len(test_x)):
     prediction = nn.predict(test_x[i])
     file.write(f"{prediction}\n")
 file.close()
-print("precistion: " + str(check_precision(len(test_x))) + '%')
