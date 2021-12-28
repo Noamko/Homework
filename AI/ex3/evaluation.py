@@ -5,6 +5,9 @@ import pandas as pd
 
 def precision_10(test_set, cf, is_user_based = True):
     "*** YOUR CODE HERE ***"
+
+    for user in test_set.userId:
+        print(f"user: {user}: {cf.predict(user, 10)}")
     val = 0 #this value should be changed.
     print("Precision_k: " + str(val))
 
