@@ -1,8 +1,6 @@
 import sys
-from matplotlib import colors
 import matplotlib.pyplot as plt
 import pandas as pd
-from pandas.core.algorithms import unique
 from collections import Counter
 import seaborn as sns
 import numpy as np
@@ -25,19 +23,22 @@ def print_data(data):
     # Question1:
     total_ratings_count = ratings.userId.count()
     unique_user_rating_count = ratings.userId.drop_duplicates().count()
-    unique_movies_rated_count = movies.movieId.drop_duplicates().count()
-    print(f"total ratings: {total_ratings_count}\ntotal users rated: {unique_user_rating_count}\ntotal movies rated: {unique_movies_rated_count}")
+    unique_movies_rated_count = ratings.movieId.drop_duplicates().count()
+    unique_rating_value = ratings.rating.drop_duplicates().count()
+    max_user_rating = ratings.rating.max()
+    min_user_rating = ratings.rating.min()
+    max_movie_rating_count = ratings.movieId.value_counts().max()
+    min_movie_rating_count = ratings.movieId.value_counts().min()
 
-    # rating distribution
-    # c = Counter(ratings.rating).most_common(15)
-    # y = []
-    # x = []
-    # for r, count in c:
-    #     x.append(r)
-    #     y.append(count)
-    # c = ['#581845', '#900C3F', '#C70039', '#FF5733', '#FFC300', '#DAF7A6', '#33acff']
-    # plt.bar(x,y, color=c)
-    # plt.show()
+    print(f"total ratings: {total_ratings_count}\
+        \nunique users rated: {unique_user_rating_count}\
+        \nunique movies rated: {unique_movies_rated_count}\
+        \nunique rating value: {unique_rating_value}\
+        \nmax user rating: {max_user_rating}\
+        \nmin uer rating: {min_user_rating}\
+        \nmax movie rating count: {max_movie_rating_count}\
+        \nmin movie rating count: {min_movie_rating_count}")
+
 
     # # Quiestion 2:
     # movie_dict = {}
@@ -53,10 +54,18 @@ def print_data(data):
     # print(c)
     # plot_data(ratings)
     # watch_data_info(ratings)
-    sys.exit(1)
 
 def plot_data(data, plot = True):
-    plt.plot(data)
+    ratings, movies = data
+    c = Counter(ratings.rating).most_common(10)
+    y = []
+    x = []
+    for r, count in c:
+        x.append(r)
+        y.append(count)
+    c = ['#581845', '#900C3F', '#C70039', '#FF5733', '#FFC300', '#DAF7A6', '#33acff']
+    plt.xlabel = 'Rating'
+    plt.ylabel = 'Count'
+    plt.bar(x, y, color=c, width=0.5)
     if plot:
         plt.show()
-    sys.exit(1)

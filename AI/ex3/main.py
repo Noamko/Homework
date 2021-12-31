@@ -17,19 +17,17 @@ cf1 = cf.collaborative_filtering()
 def analsys(data):
     # da.watch_data_info(data)
     da.print_data(data)
-    da.plot_data(data)
+    da.plot_data(data, True)
 
 # PATR 2 - COLLABORATING FILLTERING RECOMMENDATION SYSTEM
 def collaborative_filtering_rec(data, user_based = True):
     global cf1
-
     if(user_based):
         cf1.create_user_based_matrix(data)
     else:
         cf1.create_item_based_matrix(data)
 
-    result = cf1.predict_movies("283225", 5, user_based)
-    print(result)
+    # result = cf1.predict_movies("283225", 5, user_based)
 
 # PART 3 - EVALUATION
 def evaluate_rec():
@@ -39,14 +37,15 @@ def evaluate_rec():
 
 def main():
     #data
-    # analsys((rating, movies))
+    cf1.create_fake_user(rating)
+    analsys((rating, movies))
 
-    #collaborative filtering
-    collaborative_filtering_rec((rating, movies))
+    # #collaborative filtering
+    # collaborative_filtering_rec((rating, movies))
 
 
-    #evaluation
-    evaluate_rec()
+    # #evaluation
+    # evaluate_rec()
 
 
 if __name__ == "__main__":

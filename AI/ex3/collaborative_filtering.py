@@ -14,14 +14,25 @@ class collaborative_filtering:
         self.movie_dict = {}
 
     def create_fake_user(self, rating):
-        "*** YOUR   CODE HERE ***"
-                                                                                        
+        """
+        userId is 123123
+        mostly likes Action | SciFi
+        """
+        ur = [[123123, 59315, 5.0], [123123, 51662, 5.0], [123123, 56174, 3.5], [123123, 68319, 4.0], [123123, 86332, 4.0], [123123, 89745, 4.5], [123123, 72998, 5], [123123, 6534, 4.0], [123123, 5349, 4.5]]
+        for r in ur:
+            rating.append(r)
         return rating
+
+    def create_movie_dictionary(self,movies):
+        for  id, title in zip(movies.movieId, movies.title):
+            self.movie_dict[id] = title
 
     def create_user_based_matrix(self, data):
         self.data = data
         _ratings, movies = data
+        self.create_movie_dictionary(movies)
         self.data_matrix = _ratings.pivot(index='userId', columns='movieId', values='rating')
+        self.data_matrix.rename(columns=self.movie_dict, inplace=True)
         ratings = self.data_matrix.to_numpy()
         mean_user_rating = self.data_matrix.mean(axis=1).to_numpy().reshape(-1, 1).round(2)
         ratings_diff = ratings - mean_user_rating
