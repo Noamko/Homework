@@ -27,7 +27,7 @@ def collaborative_filtering_rec(data, user_based = True):
     else:
         cf1.create_item_based_matrix(data)
 
-    # result = cf1.predict_movies("283225", 5, user_based)
+    
 
 # PART 3 - EVALUATION
 def evaluate_rec():
@@ -37,11 +37,13 @@ def evaluate_rec():
 
 def main():
     #data
-    cf1.create_fake_user(rating)
-    analsys((rating, movies))
+    # r = cf1.create_fake_user(rating)
+    # analsys((rating, movies))
 
     # #collaborative filtering
-    # collaborative_filtering_rec((rating, movies))
+    collaborative_filtering_rec((rating, movies))
+    result = cf1.predict_movies(283225, 5, True)
+    print(result)
 
 
     # #evaluation
