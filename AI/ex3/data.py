@@ -1,9 +1,9 @@
+# Noam Koren
+# 308192871
+from collections import Counter
 import sys
 import matplotlib.pyplot as plt
-import pandas as pd
-from collections import Counter
 import seaborn as sns
-import numpy as np
 
 def watch_data_info(data):
     for d in data:

@@ -31,9 +31,9 @@ def collaborative_filtering_rec(data, user_based = True):
 
 # PART 3 - EVALUATION
 def evaluate_rec():
-    ev.precision_10(test_set, cf1)
-    ev.ARHA(test_set,cf1)
-    ev.RSME(test_set, cf1)
+    ev.precision_10(test_set, cf1,False)
+    ev.ARHA(test_set,cf1, False)
+    ev.RSME(test_set, cf1, False)
 
 def main():
     #data
@@ -41,13 +41,13 @@ def main():
     # analsys((rating, movies))
 
     # #collaborative filtering
-    collaborative_filtering_rec((rating, movies))
-    result = cf1.predict_movies(283225, 5, True)
+    collaborative_filtering_rec((rating, movies), False)
+    result = cf1.predict_movies(283225, 5, False)
     print(result)
 
 
     # #evaluation
-    # evaluate_rec()
+    evaluate_rec()
 
 
 if __name__ == "__main__":

@@ -1,11 +1,10 @@
+# Noam Koren
+# 308192871
 import sys
-from numpy.core.numeric import moveaxis
 import pandas as pd
 import numpy as np
 import heapq
-from pandas.core.frame import DataFrame
 from sklearn.metrics.pairwise import pairwise_distances
-
 
 class collaborative_filtering:
     def __init__(self):
@@ -42,7 +41,6 @@ class collaborative_filtering:
         
         user_similarity = 1-pairwise_distances(ratings_diff, metric='cosine')
         pred = mean_user_rating + user_similarity.dot(ratings_diff) / np.array([np.abs(user_similarity).sum(axis=1)]).T
-        pred.round(2)
         self.user_based_matrix = pd.DataFrame(pred, columns=self.data_matrix.columns, index=self.data_matrix.index)
 
     def create_item_based_matrix(self, data):
@@ -58,16 +56,14 @@ class collaborative_filtering:
         ratings_diff = ratings_diff.round(2)
         
         item_similarity = 1-pairwise_distances(ratings_diff.T, metric='cosine')
-        pred = mean_user_rating + item_similarity.dot(ratings_diff) / np.array([np.abs(item_similarity).sum(axis=1)])
+        pred = mean_user_rating.T + item_similarity.dot(ratings_diff.T) / np.array([np.abs(item_similarity).sum(axis=1)]).T
         self.item_based_metrix = pd.DataFrame(pred, columns=self.data_matrix.index, index=self.data_matrix.columns)
 
     def predict_movies(self, user_id, k, is_user_based=True):
         if is_user_based:
             data_row_unrated_pred = self.user_based_matrix.loc[int(user_id)][np.isnan(self.data_matrix.loc[int(user_id)])]
         else:
-            data_row_unrated_pred = self.item_based_metrix.loc[int(user_id)][np.isnan(self.data_matrix.loc[int(user_id)])]
+            data_row_unrated_pred = self.item_based_metrix[int(user_id)][np.isnan(self.data_matrix.loc[int(user_id)])]
         idx = np.argsort(-data_row_unrated_pred)
         sim_scores = idx[0:k]
         return data_row_unrated_pred.iloc[sim_scores]
-
-        sys.exit(1)
